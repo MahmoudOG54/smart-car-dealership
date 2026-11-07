@@ -1,0 +1,131 @@
+{
+  "name": "smart-car-dealership",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "demo-car-sales-webhook",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -112,
+        32
+      ],
+      "id": "79dfa9ab-e828-4056-a290-6fd0af9c8b80",
+      "name": "Webhook",
+      "webhookId": "demo-webhook-001"
+    },
+    {
+      "parameters": {
+        "sendTo": "admin@example.com",
+        "subject": "Smart Car Dealership - New Sale",
+        "emailType": "text",
+        "message": "=A car has been sold and here's the details:\n\nCar Type: {{ $json.body.car }}\nPrice: {{ $json.body.price }}\nBuyer: {{ $json.body.buyer }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        160,
+        -112
+      ],
+      "id": "cebb1ad7-a652-4fc1-bc8c-71baec70f127",
+      "name": "Send a message"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "DEMO_GOOGLE_SHEET_ID",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet1",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Price ": "={{ $json.body.price }}",
+            "Name": "={{ $json.body.buyer }}",
+            "Type": "={{ $json.body.car }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Price ",
+              "displayName": "Price ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        128,
+        64
+      ],
+      "id": "c3e63599-5311-4b3f-87af-eb19117b80a6",
+      "name": "Append row in sheet"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "demo-version-001",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "tags": []
+}
